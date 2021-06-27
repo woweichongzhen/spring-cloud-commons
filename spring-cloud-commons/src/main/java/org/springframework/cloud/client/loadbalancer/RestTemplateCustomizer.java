@@ -19,6 +19,8 @@ package org.springframework.cloud.client.loadbalancer;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * RestTemplate定制化，也就是对他包了一层
+ *
  * @author Spencer Gibb
  */
 public interface RestTemplateCustomizer {

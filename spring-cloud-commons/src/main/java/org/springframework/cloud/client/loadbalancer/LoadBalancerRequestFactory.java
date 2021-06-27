@@ -16,28 +16,28 @@
 
 package org.springframework.cloud.client.loadbalancer;
 
-import java.util.List;
-
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
 
+import java.util.List;
+
 /**
+ * 负载均衡请求工厂，用来创建一个负载均衡请求
  * Creates {@link LoadBalancerRequest}s for {@link LoadBalancerInterceptor} and
  * {@link RetryLoadBalancerInterceptor}. Applies {@link LoadBalancerRequestTransformer}s
  * to the intercepted {@link HttpRequest}.
  *
  * @author William Tran
- *
  */
 public class LoadBalancerRequestFactory {
 
-	private LoadBalancerClient loadBalancer;
+	private final LoadBalancerClient loadBalancer;
 
 	private List<LoadBalancerRequestTransformer> transformers;
 
 	public LoadBalancerRequestFactory(LoadBalancerClient loadBalancer,
-			List<LoadBalancerRequestTransformer> transformers) {
+									  List<LoadBalancerRequestTransformer> transformers) {
 		this.loadBalancer = loadBalancer;
 		this.transformers = transformers;
 	}
@@ -47,7 +47,7 @@ public class LoadBalancerRequestFactory {
 	}
 
 	public LoadBalancerRequest<ClientHttpResponse> createRequest(final HttpRequest request, final byte[] body,
-			final ClientHttpRequestExecution execution) {
+																 final ClientHttpRequestExecution execution) {
 		return instance -> {
 			HttpRequest serviceRequest = new ServiceRequestWrapper(request, instance, this.loadBalancer);
 			if (this.transformers != null) {

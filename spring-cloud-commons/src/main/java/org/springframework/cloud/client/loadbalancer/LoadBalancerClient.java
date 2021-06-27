@@ -16,12 +16,13 @@
 
 package org.springframework.cloud.client.loadbalancer;
 
+import org.springframework.cloud.client.ServiceInstance;
+
 import java.io.IOException;
 import java.net.URI;
 
-import org.springframework.cloud.client.ServiceInstance;
-
 /**
+ * 负载均衡 Client
  * Represents a client-side load balancer.
  *
  * @author Spencer Gibb
@@ -29,37 +30,44 @@ import org.springframework.cloud.client.ServiceInstance;
 public interface LoadBalancerClient extends ServiceInstanceChooser {
 
 	/**
+	 * 执
+	 * 行请求
 	 * Executes request using a ServiceInstance from the LoadBalancer for the specified
 	 * service.
+	 *
 	 * @param serviceId The service ID to look up the LoadBalancer.
-	 * @param request Allows implementations to execute pre and post actions, such as
-	 * incrementing metrics.
-	 * @param <T> type of the response
-	 * @throws IOException in case of IO issues.
+	 * @param request   Allows implementations to execute pre and post actions, such as
+	 *                  incrementing metrics.
+	 * @param <T>       type of the response
 	 * @return The result of the LoadBalancerRequest callback on the selected
 	 * ServiceInstance.
+	 * @throws IOException in case of IO issues.
 	 */
 	<T> T execute(String serviceId, LoadBalancerRequest<T> request) throws IOException;
 
 	/**
+	 * 执行请求
 	 * Executes request using a ServiceInstance from the LoadBalancer for the specified
 	 * service.
-	 * @param serviceId The service ID to look up the LoadBalancer.
+	 *
+	 * @param serviceId       The service ID to look up the LoadBalancer.
 	 * @param serviceInstance The service to execute the request to.
-	 * @param request Allows implementations to execute pre and post actions, such as
-	 * incrementing metrics.
-	 * @param <T> type of the response
-	 * @throws IOException in case of IO issues.
+	 * @param request         Allows implementations to execute pre and post actions, such as
+	 *                        incrementing metrics.
+	 * @param <T>             type of the response
 	 * @return The result of the LoadBalancerRequest callback on the selected
 	 * ServiceInstance.
+	 * @throws IOException in case of IO issues.
 	 */
 	<T> T execute(String serviceId, ServiceInstance serviceInstance, LoadBalancerRequest<T> request) throws IOException;
 
 	/**
+	 * 处理uri地址
 	 * Creates a proper URI with a real host and port for systems to utilize. Some systems
 	 * use a URI with the logical service name as the host, such as
 	 * http://myservice/path/to/service. This will replace the service name with the
 	 * host:port from the ServiceInstance.
+	 *
 	 * @param instance service instance to reconstruct the URI
 	 * @param original A URI with the host as a logical service name.
 	 * @return A reconstructed URI.

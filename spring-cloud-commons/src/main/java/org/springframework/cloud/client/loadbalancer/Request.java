@@ -17,6 +17,8 @@
 package org.springframework.cloud.client.loadbalancer;
 
 /**
+ * 标记一个请求的接口
+ *
  * Marker interface for a request.
  *
  * @author Spencer Gibb

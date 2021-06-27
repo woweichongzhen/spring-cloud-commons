@@ -16,10 +16,6 @@
 
 package org.springframework.cloud.client.loadbalancer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +35,12 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
+ * 自动配置 阻塞的client请求 的 负载均衡
  * Auto-configuration for blocking client-side load balancing.
  *
  * @author Spencer Gibb
@@ -64,6 +65,7 @@ public class LoadBalancerAutoConfiguration {
 	@Bean
 	public SmartInitializingSingleton loadBalancedRestTemplateInitializerDeprecated(
 			final ObjectProvider<List<RestTemplateCustomizer>> restTemplateCustomizers) {
+		// 单例bean实例化之后执行，对restTemplate包装一层定制化器
 		return () -> restTemplateCustomizers.ifAvailable(customizers -> {
 			for (RestTemplate restTemplate : LoadBalancerAutoConfiguration.this.restTemplates) {
 				for (RestTemplateCustomizer customizer : customizers) {
@@ -79,16 +81,25 @@ public class LoadBalancerAutoConfiguration {
 		return new LoadBalancerRequestFactory(loadBalancerClient, this.transformers);
 	}
 
+	/**
+	 * 负载均衡拦截器配置
+	 */
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(RetryMissingOrDisabledCondition.class)
 	static class LoadBalancerInterceptorConfig {
 
+		/**
+		 * 负载均衡拦截器
+		 */
 		@Bean
 		public LoadBalancerInterceptor loadBalancerInterceptor(LoadBalancerClient loadBalancerClient,
-				LoadBalancerRequestFactory requestFactory) {
+															   LoadBalancerRequestFactory requestFactory) {
 			return new LoadBalancerInterceptor(loadBalancerClient, requestFactory);
 		}
 
+		/**
+		 * RestTemplate 给他设置一个负载均衡拦截器
+		 */
 		@Bean
 		@ConditionalOnMissingBean
 		public RestTemplateCustomizer restTemplateCustomizer(final LoadBalancerInterceptor loadBalancerInterceptor) {
@@ -147,9 +158,10 @@ public class LoadBalancerAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RetryLoadBalancerInterceptor loadBalancerInterceptor(LoadBalancerClient loadBalancerClient,
-				LoadBalancerProperties properties, LoadBalancerRequestFactory requestFactory,
-				LoadBalancedRetryFactory loadBalancedRetryFactory,
-				ReactiveLoadBalancer.Factory<ServiceInstance> loadBalancerFactory) {
+																	LoadBalancerProperties properties,
+																	LoadBalancerRequestFactory requestFactory,
+																	LoadBalancedRetryFactory loadBalancedRetryFactory,
+																	ReactiveLoadBalancer.Factory<ServiceInstance> loadBalancerFactory) {
 			return new RetryLoadBalancerInterceptor(loadBalancerClient, properties, requestFactory,
 					loadBalancedRetryFactory, loadBalancerFactory);
 		}

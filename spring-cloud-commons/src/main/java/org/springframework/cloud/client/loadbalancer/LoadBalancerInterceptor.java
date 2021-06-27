@@ -16,16 +16,18 @@
 
 package org.springframework.cloud.client.loadbalancer;
 
-import java.io.IOException;
-import java.net.URI;
-
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
+import java.net.URI;
+
 /**
+ * 负载均衡拦截器 （继承客户端http请求拦截器）
+ *
  * @author Spencer Gibb
  * @author Dave Syer
  * @author Ryan Baxter
@@ -33,9 +35,9 @@ import org.springframework.util.Assert;
  */
 public class LoadBalancerInterceptor implements ClientHttpRequestInterceptor {
 
-	private LoadBalancerClient loadBalancer;
+	private final LoadBalancerClient loadBalancer;
 
-	private LoadBalancerRequestFactory requestFactory;
+	private final LoadBalancerRequestFactory requestFactory;
 
 	public LoadBalancerInterceptor(LoadBalancerClient loadBalancer, LoadBalancerRequestFactory requestFactory) {
 		this.loadBalancer = loadBalancer;
@@ -48,8 +50,9 @@ public class LoadBalancerInterceptor implements ClientHttpRequestInterceptor {
 	}
 
 	@Override
-	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body,
-			final ClientHttpRequestExecution execution) throws IOException {
+	public ClientHttpResponse intercept(final HttpRequest request,
+										final byte[] body,
+										final ClientHttpRequestExecution execution) throws IOException {
 		final URI originalUri = request.getURI();
 		String serviceName = originalUri.getHost();
 		Assert.state(serviceName != null, "Request URI does not contain a valid hostname: " + originalUri);
